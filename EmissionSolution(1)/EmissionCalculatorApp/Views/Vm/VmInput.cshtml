@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>VmInput</title>
+    <style>
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="vm-title">
+        <h2 class="display-5 vm-emission__title">Tailor your sustainability efforts</h2>
+        <p>This tool offers a detailed analysis of carbon emissions for Azure VMs, allowing experienced users to input
+            specific configurations for CPUs, GPUs, and other parameters. It's designed to give you precise control over
+            your environmental impact, adapting to your unique operational needs and helping optimize your resource
+            efficiency based on specific data inputs.</p>
+    </div>
+    <div class="centered-container">
+        <div class="form-group">
+            <label for="Cpu">Number of CPU's:</label>
+            <input type="number" name="Cpu" id="Cpu" value="0" />
+        </div>
+        <div class="form-group">
+            <label for="CpuTDF">CPU TDF:</label>
+            <input type="number" name="CpuTDF" id="CpuTDF" value="0" />
+            <p>W</p>
+        </div>
+        <div class="form-group">
+            <label for="MemoryConsumption">Memory power consumption</label>
+            <input type="number" name="MemoryConsumption" id="MemoryConsumption" value="0" />
+            <p>W</p>
+        </div>
+        <div class="form-group">
+            <label for="Gpu">Number of GPU's:</label>
+            <input type="number" name="Gpu" id="Gpu" value="0" />
+        </div>
+        <div class="form-group">
+            <label for="GpuTDF">GPU TDF:</label>
+            <input type="number" name="GpuTDF" id="GpuTDF" value="0" />
+            <p>W</p>
+        </div>
+        <div class="form-group">
+            <label for="Load">Workload:</label>
+            <input type="number" name="load" id="load" value="100" />
+            <p>%</p>
+        </div>
+        <div class="form-group">
+            <label for="computingHours">Computing Hours:</label>
+            <input type="number" name="computingHours" id="computingHours" value="1" />
+        </div>
+         <div class="form-group">
+            <label for="region">Region:</label>
+            <select name="region" id="region">
+                @foreach (var region in ViewBag.regionItems)
+                {
+                    <option value="@region.Region">@region.Region (@region.City)</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="button" class="btn btn-primary" value="Calculate" class="btn" id="calculateBtn" onclick="calculateEmission()"/>
+        </div>
+        
+        <div class="form-group">
+            <span id="emission"></span>
+        </div>
+        <div class="form-group">
+            <span id="errorMessage" class="error-message"></span>
+        </div>
+        <div class="chart">
+        <canvas id="carbonGauge" width="800" height="500"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+        const regionList = @Html.Raw(Json.Serialize(ViewBag.regionItems));
+        const calculateEmission = async () => {
+            resetCharts();
+            const PUE = 1.2;
+            const region = document.getElementById('region').value;
+            const computingHours = parseInt(document.getElementById('computingHours').value);
+            const load = parseInt(document.getElementById('load').value);
+            const cpuCount = parseInt(document.getElementById('Cpu').value);
+            const cpuTDF = parseInt(document.getElementById('CpuTDF').value);
+            const gpuCount = parseInt(document.getElementById('Gpu').value);
+            const gpuTDF = parseInt(document.getElementById('GpuTDF').value);
+            const memoryConsumption = parseInt(document.getElementById('MemoryConsumption').value);
+            const regionList = @Html.Raw(Json.Serialize(ViewBag.regionItems));
+            const selectedRegion = regionList.find(reg => reg.region === region);
+
+            if (cpuCount === 0 && cpuTDF === 0 && gpuCount === 0 && gpuTDF === 0) {
+                document.getElementById('errorMessage').textContent = 'Please fill in at least one field.';
+                return;
+            }
+            if ((cpuCount <= 0 && cpuTDF > 0) || (cpuCount > 0 && cpuTDF <= 0)) {
+                document.getElementById('errorMessage').textContent = 'Please fill in both CPU fields or leave both empty.';
+                return;
+            }
+            if ((gpuCount <= 0 && gpuTDF > 0) || (gpuCount > 0 && gpuTDF <= 0)) {
+                document.getElementById('errorMessage').textContent = 'Please fill in both GPU fields or leave both empty.';
+                return;
+            }
+            
+            document.getElementById('errorMessage').textContent = "";
+
+            document.getElementById('emission').textContent = "Calculating... Please wait.";
+            await new Promise(x => setTimeout(x, 2000));
+
+            const loadInpercent = load / 100;
+
+            const totalPowerConsumption = (cpuCount * cpuTDF + memoryConsumption + gpuCount * gpuTDF) * computingHours * loadInpercent;
+            const emission = totalPowerConsumption * selectedRegion.eci * PUE;
+            const result = emission / 1000;
+            document.getElementById('emission').textContent = "Your Carbon footprint is estimated at " + result.toFixed(3) + " grams of CO2eq" + ", running " + computingHours + " hour(s) in " + selectedRegion.city;
+
+
+            drawChart(result.toFixed(3));
+        };
+        
+        let myChart;
+        const resetCharts = () => {
+            if (myChart) {
+                myChart.destroy();
+                myChart = null;
+                }
+        };
+        const drawChart = (result) => {
+            const ctx = document.getElementById('carbonGauge').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Your Carbon Footprint'],
+                    datasets: [
+                        {
+                            label: 'Your estimated Carbon Footprint',
+                            data: [result],
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'red',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Toyota Avensis driven 100 km',
+                            data: [31],
+                            backgroundColor: 'rgba(0, 255, 0, 0.2)',
+                            borderColor: 'green',
+                            borderWidth: 1
+                        }
+
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+        });
+    };
+
+        @* const saveResultToCosmosDB = async (resultItem) => {
+        }; *@
+    </script>
+
+</body>
+
+</html>

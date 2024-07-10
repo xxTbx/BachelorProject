@@ -1,0 +1,121 @@
+@{
+    ViewBag.Title = "Methodology";
+}
+
+<div class="container">
+
+    <h1 style="font-weight: 700; color:#064E3B;">Azure VM Carbon Emissions Calculator</h1>
+    <p>Our tool makes it easy to see how much carbon Azure VMs produce, helping those new to cloud services choose
+        sustainable options by region and instance type. It helps you make better choices about resource use based
+        on local carbon levels.</p>
+    <h2>User-Friendly Interface</h2>
+    <p>The calculator features an intuitive interface where users can specify details about their Azure VM usage:
+    </p>
+    <ul>
+        <li> <strong>Select VM Instance:</strong> Users can choose from various VM instance types, such as CPU-optimized
+            (Standard_D2s_v3) or GPU-optimized <strong>(Standard_NC6s_v3) </strong>instances.</li>
+        <li><strong>Select Region:</strong> Users can select the Azure region where the VM will be running, e.g.,
+            "Europe (Oslo)".
+            Different regions have varying carbon intensities depending on the energy mix used.</li>
+        <li><strong>Specify Workload:</strong> Users can specify the expected workload (CPU/GPU utilization) as a
+            percentage using a
+            slider.</li>
+        <li><strong>Specify Computing Hours: </strong>Users can enter the number of hours the VM is expected to run
+            under the
+            specified workload.</li>
+        <li><strong>Calculate:</strong> After entering all parameters, users can click "Calculate" to generate the CO2
+            emissions
+            estimate.</li>
+        <li><strong>Compare:</strong> After obtaining the initial estimate, users can click "Compare" to open a new
+            section where
+            they can enter a new set of parameters and compare the two scenarios side by side.</li>
+    </ul>
+    <h2>Calculation Methodology</h2>
+    <p>The tool is based on the following formula to calculate the total power consumption (P) in kilowatts (kW) for
+        a VM:</p>
+    <p>P<sub>total</sub>[kW] = (c &times; P<sub>c</sub> + P<sub>r</sub> + g &times; P<sub>g</sub>) / 1000 &times;
+        PUE</p>
+    <p>Where:</p>
+    <ul>
+        <li>c is the number of CPUs</li>
+        <li>P<sub>c</sub> is the power consumption of each CPU (based on Thermal Design Power, TDP)</li>
+        <li>P<sub>r</sub> is the power consumption of memory</li>
+        <li>g is the number of GPUs</li>
+        <li>P<sub>g</sub> is the power consumption of each GPU (based on TDP)</li>
+        <li>PUE is the Power Usage Effectiveness (in this case, 1.2)</li>
+    </ul>
+
+    <div> <img src="~/images/Sara-Formula.png" alt="sara-formula-image">
+        <figcaption style="margin-bottom: 20px">
+            Formula illustration:
+            <a href="https://devblogs.microsoft.com/sustainable-software/how-can-i-calculate-co2eq-emissions-for-my-azure-vm/"
+                target="_blank">Sara Bergman</a>
+        </figcaption>
+
+    </div>
+
+
+
+    <p>This formula sums the power consumption of CPUs, GPUs, and memory, converts it to kilowatts, and adjusts for
+        PUE, which accounts for additional energy consumption for cooling, lighting, and other infrastructure in the
+        data center.</p>
+    <p>To calculate the actual CO2 emissions, the estimated energy consumption is multiplied by the carbon intensity
+        (gCO2eq/kWh) of the power grid in the selected Azure region.</p>
+    <p>The tool utilizes cubic spline interpolation to estimate the power consumption (CPU/GPU wattage) based on the
+        workload, using datasets with measurements at various load levels (idle, 10%, 50%, 100%).</p>
+    <h2>Example Calculation</h2>
+    <p>Let's look at an example calculation for the "Standard_D2s_v3" Azure VM instance. The data for this instance
+        are from our Azure Cosmos database:</p>
+    <pre><code>{ "Name": "Standard_D2s_v3", "Processor": "Intel Xeon Platinum 8171M (Skylake)", "Cpus": 2, "CpuTdp": 165, "Gpus": 0, "GpuTdp": 0, "Memory-Gib": 8, "Temp-storage-(SSD)-Gib": 50, "Max-data-disks": 4 }</code></pre>
+    <p>Based on this data, we can substitute the values into the formula:</p>
+    <ul>
+        <li>c = 2 (Cpus)</li>
+        <li>P<sub>c</sub> = 165 (CpuTdp in watts)</li>
+        <li>P<sub>r</sub> = negligible compared to CPU</li>
+        <li>g = 0 (no GPUs)</li>
+        <li>P<sub>g</sub> = 0 (no GPUs)</li>
+        <li>PUE = 1.2</li>
+    </ul>
+    <p>Since there are no GPUs, we can omit the g &times; P<sub>g</sub> part of the formula, simplifying it to:</p>
+    <p>P<sub>total</sub>[kW] = (c &times; P<sub>c</sub> + P<sub>r</sub>) / 1000 &times; PUE</p>
+    <p>Substituting the values:</p>
+    <p>P<sub>total</sub>[kW] = (2 &times; 165 + P<sub>r</sub>) / 1000 &times; 1.2</p>
+    <p>Assuming the memory power consumption (P<sub>r</sub>) is negligible compared to the CPU, we can further
+        simplify to:</p>
+    <p>P<sub>total</sub>[kW] = (2 &times; 165) / 1000 &times; 1.2 = 0.396</p>
+    <p>So the estimated power consumption for the "Standard_D2s_v3" VM instance is 0.396 kilowatts (kW).</p>
+    <p>To calculate the CO2 emissions, we multiply this by the carbon intensity for the "Europe (Oslo)" region,
+        assumed to be 30 gCO2eq/kWh.</p>
+    <p>If running for 1 hour (1 kWh = 1 kW x 1 hour):</p>
+    <p>CO2 emissions = 0.396 kWh x 30 gCO2eq/kWh = 11.88 gCO2eq</p>
+    <p>Therefore, for this specific "Standard_D2s_v3" VM instance running 1 hour at 100% load in the "Europe (Oslo)"
+        region, the estimated CO2 emissions are 11.88 gCO2eq.</p>
+    <h2>Visualization and Comparison</h2>
+    <p>The results are displayed in a chart that allows users to easily see and interpret the estimated CO2
+        emissions for the selected VM instance, region, workload, and computing hours.</p>
+    <p>After obtaining the initial estimate, users can click "Compare" to open a new section of the interface. Here,
+        users can enter a new set of parameters (VM instance, region, workload, computing hours) to calculate a new
+        CO2 emissions estimate. When the new parameters are entered and "Compare Graphs" is clicked, the chart will
+        update to display both the original and the new estimate side by side.</p>
+    <p>This feature allows users to easily compare emissions for different scenarios, such as changing to a
+        different VM instance, region, or workload. In this way, users can evaluate the impact of making changes to
+        potentially reduce their carbon footprint.</p>
+    <h2>Conclusion</h2>
+    <p>By utilizing this tool, organizations can gain better insight into the environmental impact of their
+        cloud-based virtual machines. This provides the opportunity to make informed decisions about which regions,
+        instance types, workloads, and computing hours should be used to reduce unnecessary energy consumption and
+        CO2 emissions. Through increased awareness and targeted actions, we can contribute to a more sustainable use
+        of cloud services while enjoying their many benefits.</p>
+
+    <h3>Resources</h3>
+    <ul>
+        <li><a href="https://devblogs.microsoft.com/sustainable-software/how-can-i-calculate-co2eq-emissions-for-my-azure-vm/"
+                target="_blank">How Can I Calculate CO2eq emissions for my Azure VM?</a></li>
+        <li><a href="https://www.geeksforgeeks.org/what-are-azure-virtual-machines/" target="_blank">What are Azure
+                Virtual Machines?</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/azure/virtual-machines/" target="_blank">Virtual machines in
+                Azure</a></li>
+    </ul>
+
+
+</div>

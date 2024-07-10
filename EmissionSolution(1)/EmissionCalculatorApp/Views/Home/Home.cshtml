@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "Home";
+    ViewBag.BodyClass = "home-background";
+}
+
+
+
+<main>
+    <div class="front-page-container">
+        <h2 class="sub-Cloud">Sustainable Cloud Analytics</h2>
+        <p class="fs-5">Welcome! Our web app helps businesses measure and understand their environmental
+            impact from
+            using
+            Azure cloud
+            services.
+        </p>
+        <div class="Buttons">
+            <button id="calculateButton" class="Calculate">Calculate</button>
+            <button id="Learn-moreButton" class="Learn-more">Learn more</button>
+        </div>
+    </div>
+    <div class="gg">
+    </div>
+
+
+</main>
+<div class="div">
+    <div class="div-2">Green Tech Vision</div>
+    <div class="div-3">
+        <div class="div-4">
+            <div class="column">
+                <div class="div-5">Empowering Sustainable Cloud</div>
+            </div>
+            <div class="column-2">
+                <div class="div-6">Track, Reduce, and Manage Emissions</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="Tool-container">
+    <section class="tool-section">
+        <h3 class="Tool-title">Tool Functionality</h3>
+        <p class="description">Our tool is designed to assist businesses in making informed, sustainable choices. By
+            calculating the
+            environmental footprint, specifically focusing on energy consumption and CO2 emissions of Azure virtual
+            machines.
+        </p>
+    </section>
+    <div class="image-container">
+        <img src="/images/co2.png" alt="Holding the Light" class="light-image">
+    </div>
+</div>
+
+<div class="Tool-container">
+    <div class="image-container">
+        <img src="/images/holding-light.png" alt="Holding the Light" class="light-image">
+    </div>
+    <section class="tool-section">
+        <h3 class="Tool-title">Illuminating Sustainability</h3>
+        <p class="description">In a world striving for sustainability, every action counts. it’s crucial to curb its
+            environmental impact.Our tool offers you the power to make decisions that don't just benefit your business,
+            but also contribute to the health of our planet.
+        </p>
+    </section>
+
+</div>
+
+
+
+
+<!-- <p>Created with our partners at Evidi, we aim to increase awareness and inspire actions that reduce
+the
+digital services' carbon footprint. Discover how our tool can guide your eco-friendly technology decisions.</p>-->
+<script>
+    document.getElementById('calculateButton').addEventListener('click', function () {
+        window.location.href = '@Url.Action("Vm", "Vm")';
+    });
+
+
+    document.getElementById('Learn-moreButton').addEventListener('click', function () {
+        window.location.href = '@Url.Action("Methodology", "Methodology")';
+    });
+</script>

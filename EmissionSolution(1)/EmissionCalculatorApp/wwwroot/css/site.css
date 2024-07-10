@@ -1,0 +1,393 @@
+html {
+  font-size: 14px;
+}
+
+img {
+  max-width: 600px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  
+  background-color: #ECFDF5;
+  
+ 
+  
+ 
+}
+
+.gg {
+  height:600px;
+  width: 100%;
+  background-image: url('/images/sustain.png');
+  background-size: cover;
+  background-position: center;
+  border-radius: 2%;
+ 
+  /*background-attachment: fixed; */
+  /* background-repeat: no-repeat; */
+
+
+}
+
+.home-background{
+  /* background-image: url('/images/data_center_environment.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat; */
+
+}
+
+header{
+ /* background-color: green;*/
+  background-color: #ECFDF5;
+  width: 100%;
+  /*color: white;*/
+ 
+  
+}
+
+.navbar .nav-link {
+  /*color:white !important; /* Dette vil bare pÃ¥virke .nav-link i .navbar */
+  color:#064E3B !important ;
+
+}
+
+.navbar-brand{
+  color: black !important;
+}
+
+.bg-white{
+  /*background-color: green !important;*/
+  background-color: #ECFDF5;
+ background-color: transparent !important;
+}
+
+.navbar-brand{
+  font-size: 18px;
+  color:#064E3B !important;
+}
+
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.border-bottom {
+  border-bottom: 0px solid #dee2e6 !important;
+}
+
+
+.style-frontpageImage{
+  width: 100%;
+    height: auto;
+   
+}
+
+.mb-3{
+  margin-bottom: 0 !important;
+}
+
+
+.front-page-container{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  
+  padding: 20px;
+  margin-top: 1vh;
+  color: #064E3B;
+
+  /*color: cornsilk;*/
+
+}
+
+
+.sub-Cloud{
+  margin-bottom: 30px;
+}
+
+.centered-container input{
+  margin-left: 70px !important;
+}
+
+
+.flex-container{
+  display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    
+}
+
+main{
+  flex-grow: 1;
+}
+
+/*Footer base styling 
+.footer {
+  padding: 20px 0;
+  background-color: #ecfdf5;
+  color: #6c757d; /* Muted text color 
+  border-top: 1px solid #e4e5e7; /* Top border 
+  text-align: center; /* Center align text 
+}
+
+.footer .container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically 
+  align-items: center; /* Center children horizontally 
+}
+
+.footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0; /* Remove default margin 
+}
+
+.footer ul li {
+  padding: 5px 0; /* Add padding top and bottom for each list item 
+}
+.nav{
+  display: block;
+}
+.footer ul li a {
+  color: #007bff; /* Link color 
+  text-decoration: none;  
+  display: block; /* Make the links take full width of list item 
+  padding: 20px;
+}
+
+.footer ul li a:hover {
+  text-decoration: underline; /* Underline on hover 
+}
+
+/* Responsive adjustments for small screens, optional if you want different styles for mobile 
+@media (max-width: 768px) {
+  .footer ul li {
+      padding: 3px 0; /* Smaller padding for smaller screens 
+  }
+}  
+*/
+
+.footer {
+  align-self: stretch;
+  
+  background-color: #ecfdf5;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 0 32px 40px;
+}
+
+.footer-link{
+  margin-top: 17px;
+  text-decoration: none !important;
+}
+
+@media (max-width: 991px) {
+  .footer {
+    padding-left: 20px;
+  }
+}
+
+.footer-content {
+  justify-content: flex-end;
+  align-content: flex-start;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 991px) {
+  .footer-content {
+    max-width: 100%;
+    padding-left: 20px;
+  }
+}
+
+.footer-columns {
+  gap: 20px;
+  display: flex;
+}
+
+@media (max-width: 991px) {
+  .footer-columns {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 69%;
+  margin-left: 0;
+ 
+}
+
+@media (max-width: 991px) {
+  .footer-links {
+    width: 100%;
+  }
+}
+
+.footer-link{
+  margin-top: 20px !important;
+}
+
+.footer-link {
+  color: #064e3b;
+  text-decoration: underline;
+  font: 400 14px/22px "Open Sans", sans-serif;
+}
+
+@media (max-width: 991px) {
+  .footer-link {
+    max-width: 100%;
+    margin-top: 40px;
+  }
+
+ .form-group {
+  max-width: 100%;
+ }
+ .centered-container {
+  padding: 4rem;
+ }
+}
+
+.footer-social {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 31%;
+  
+}
+
+@media (max-width: 991px) {
+  .footer-social {
+    width: 100%;
+  }
+}
+
+.social-links {
+  display: flex;
+  flex-grow: 1;
+  padding-bottom: 80px;
+  flex-direction: column;
+  font-size: 14px;
+  color: #064e3b;
+  font-weight: 400;
+  white-space: nowrap;
+  line-height: 160%;
+}
+
+.social-link a {
+  color: black; /* eller #000 for svart */
+  text-decoration: none; /* Fjerner understreking fra lenker */
+}
+
+
+@media (max-width: 991px) {
+  .social-links {
+    margin-top: 40px;
+    white-space: initial;
+  }
+}
+
+.social-link {
+  font-family: "Open Sans", sans-serif;
+  margin-top: 16px;
+}
+
+.footer-divider {
+  background-color: #e5e7eb;
+  height: 1px;
+}
+
+@media (max-width: 991px) {
+  .footer-divider {
+    max-width: 100%;
+  }
+}
+
+.footer-bottom {
+  justify-content: space-between;
+  display: flex;
+  margin-top: 32px;
+  width: 100%;
+  padding-right: 40px;
+  gap: 8px;
+  font-weight: 400;
+  line-height: 160%;
+}
+
+@media (max-width: 991px) {
+  .footer-bottom {
+    max-width: 100%;
+    flex-wrap: wrap;
+    padding-right: 20px;
+  }
+}
+
+.footer-copyright {
+  color: #059669;
+  font: 12px "Open Sans", sans-serif;
+}
+
+.footer-legal {
+  justify-content: end;
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #064e3b;
+  padding: 0 80px;
+}
+
+#carbonGauge{
+  width: 500px;
+  height: 300px;
+
+}
+@media (max-width: 991px) {
+  .footer-legal {
+    flex-wrap: wrap;
+    padding: 0 20px;
+  }
+  .Result{
+    display: flex;
+    flex-direction: column
+   }
+}
+
+.legal-link {
+  font-family: "Open Sans", sans-serif;
+}
+
+@media (max-width: 800px) {
+  img {
+    max-width: 100%;
+  }
+}
+

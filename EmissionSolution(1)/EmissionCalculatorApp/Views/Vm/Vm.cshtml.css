@@ -1,0 +1,133 @@
+/* Sentrerer skjemaelementene */
+.form-container {
+    flex-basis: 50%; /* Tar halvparten av den tilgjengelige plassen */
+    max-width: 50%; /* Setter maksimal bredde for å unngå overstrekk */
+}
+
+/* Legger til litt mellomrom mellom skjemaelementene */
+.form-group {
+    margin-bottom: 10px;
+}
+
+/* Justerer knappen */
+.form-group .btn {
+    margin-top: 10px;
+}
+
+
+body {
+   /* background-color: #08141e;*/
+  /* background-color: #ECFDF5;*/
+  background-color: #2C3E50;
+    
+}
+
+.flex-container{
+    background-color: #2C3E50;
+}
+
+
+header {
+    background-color: #2C3E50;
+    
+}
+.vm-title{
+    margin-bottom: 60px;
+    text-align: center;
+    color: #064e3b;
+  font-size: 1.25rem !important;
+
+}
+
+.vm-emission__title{
+    color: #65a30d;
+  font: 900 36px/130% Playfair Display, -apple-system, Roboto, Helvetica, sans-serif;
+}
+
+
+
+.main-layout {
+    display: flex;
+    flex-direction: row;  /* Elementene arrangeres horisontalt */
+    align-items: start;  /* Linjerer elementene øverst */
+    justify-content: space-between;  /* Distribuerer plass mellom elementene */
+    
+}
+
+.form-and-info {
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    background-color: #ECFDF5; /* Gir litt plass mellom skjemaet og grafen */
+}
+
+.vm-title p{
+    width: 50%;
+    margin-top: 50px;
+    color: black;
+    margin-left: 25%;
+    
+}
+
+.charts-container {
+    width: 100%;
+    padding: 20px;
+    
+    margin-bottom: 20px;
+}
+
+#calculateBtn{
+    color: black;
+    background-color: #A7F0BA;
+}
+
+.load{
+background-color: #064E3B;
+padding: 60px;
+border-radius: 20px;
+color: white;
+
+
+}
+
+.compare-container{
+    display: none;
+}
+
+.compare-container {
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: #e8e8e8;
+}
+
+
+.Result{
+    display: flex;
+}
+
+
+
+#chart, #pieChart {
+    width: 100%;  /* Setter bredden til hele konteinerbredden */
+    max-width: 600px;  /* Setter en maks bredde på grafen */
+    height: auto;  /* Setter automatisk høyde basert på bredde */
+}
+
+#compareGraphsBtn{
+    color: #fff;
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+@media (min-width: 768px) {
+   main{
+    display: flex;
+    flex-direction: column;
+   }
+
+   .load{
+    padding: 60px !important;
+   }
+  }

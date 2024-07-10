@@ -1,0 +1,418 @@
+@* @using (Html.BeginForm("Calculate", "Vm")) { *@
+
+<main class="main-layout">
+    <div class="form-and-info">
+        <div class="vm-title">
+            <h2 class="display-5 vm-emission__title"> Explore methods to reduce emissions</h2>
+
+
+            <p>Our tool makes it easy to see how much carbon Azure VMs produce, helping those new to cloud services
+                choose
+                sustainable options by region and instance type. It helps you make better choices about resource use
+                based
+                on local carbon levels.</p>
+        </div>
+
+
+        <div class="Result">
+            <div class="load">
+                <h3 class="vm-emission__subtitle" style="text-align: center; margin-bottom:40px;">Select your workload
+                </h3>
+
+                <section class="form-container">
+                    <section class="form-group">
+                        <label for="instance">Your Instance:</label>
+                        <select name="instance" id="instance">
+                            @foreach (var instance in ViewBag.instanceItems)
+                            {
+                                <option value="@instance.Name">@instance.Name</option>
+                            }
+                        </select>
+                        <button id="generateInfoBtn" class="btn btn-primary btn-sm ml-2"
+                            onclick="generateInfoBtn('generateInfoBtn')">Generate Info</button>
+                    </section>
+
+                    <section class="form-group">
+                        <label for="region">Region:</label>
+                        <select name="region" id="region">
+                            @foreach (var region in ViewBag.regionItems)
+                            {
+                                <option value="@region.Region">@region.Region (@region.City)</option>
+                            }
+                        </select>
+                        <button id="generateRegionInfoBtn" class="btn btn-primary btn-sm ml-2"
+                            onclick="generateRegionInfoBtn('generateRegionInfoBtn')">Generate Info</button>
+                    </section>
+
+                    <section class="form-group">
+                        <label for="Load">Workload:</label>
+                        <input type="number" name="load" id="load" value="100" />
+                        <p> %</p>
+                    </section>
+
+                    <section class="form-group">
+                        <label for="computingHours">Computing Hours:</label>
+                        <input type="number" name="computingHours" id="computingHours" value="1" />
+                    </section>
+
+                    <section class="form-group">
+                        <span id="error" class="text-danger" style="display: none;">All fields have to be more than
+                            0</span>
+                    </section>
+
+                    <section class="form-group">
+                        <button type="button" id="calculateBtn" class="btn" onclick="calculateBtn()">Calculate</button>
+                    </section>
+
+                    <section class="form-group">
+                        <span id="emission">@ViewBag.result</span>
+                    </section>
+            </div>
+
+            <section class="charts charts-container">
+                <canvas id="chart" width="800" height="500"></canvas>
+                <button id="compareBtn" class="btn btn-primary" style="display: none;"
+                    onclick="showCompareBtn()">Compare</button>
+            </section>
+
+            <!-- Modaler -->
+            <section class="modal" id="instanceModal">
+                <section class="modal-dialog" role="document">
+                    <section class="modal-content">
+                        <section class="modal-header">
+                            <h5 id="instanceModalLabel">Instance Information</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                onclick="closeModal('instanceModal')">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </section>
+                        <section class="modal-body" id="instanceInfo"></section>
+                    </section>
+                </section>
+            </section>
+
+            <section class="modal" id="regionModal">
+                <section class="modal-dialog" role="document">
+                    <section class="modal-content">
+                        <section class="modal-header">
+                            <h5 id="regionModalLabel">Region Information</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                onclick="closeModal('regionModal')">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </section>
+                        <section class="modal-body" id="regionInfo"></section>
+                    </section>
+                </section>
+            </section>
+            </section>
+
+
+
+            @* compare *@
+            <section class="compare-container" id="compare-container">
+                <section class="form-group">
+                    <label for="instance">Your Instance:</label>
+                    <select name="instance" id="c-instance">
+                        @foreach (var instance in ViewBag.instanceItems)
+                        {
+                            <option value="@instance.Name">@instance.Name</option>
+                        }
+                    </select>
+                    <button id="c-generateInfoBtn" class="btn btn-primary btn-sm ml-2"
+                        onclick="generateInfoBtn()">Generate Info</button>
+                </section>
+
+                <section class="form-group">
+                    <label for="region">Region:</label>
+                    <select name="region" id="c-region">
+                        @foreach (var region in ViewBag.regionItems)
+                        {
+                            <option value="@region.Region">@region.Region (@region.City)</option>
+                        }
+                    </select>
+                    <button id="c-generateRegionInfoBtn" class="btn btn-primary btn-sm ml-2"
+                        onclick="generateRegionInfoBtn()">Generate Info</button>
+                </section>
+
+                <section class="form-group">
+                    <label for="Load">Workload:</label>
+                    <input type="number" name="load" id="c-load" value="100" />
+                    <p> %</p>
+                </section>
+
+                <section class="form-group">
+                    <label for="computingHours">Computing Hours:</label>
+                    <input type="number" name="computingHours" id="c-computingHours" value="1" />
+                </section>
+
+                <section class="form-group">
+                    <span id="error2" class="text-danger" style="display: none;">All fields have to be greater than
+                        0</span>
+                </section>
+
+
+                <section class="form-group" id="compareBtnContainer">
+                    <button type="button" id="compareGraphsBtn" class="btn" onclick="compareGraphsBtn()">Compare
+                        Graphs</button>
+                </section>
+
+            </section>
+
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+    const instanceList = @Html.Raw(Json.Serialize(ViewBag.instanceItems));
+    const regionList = @Html.Raw(Json.Serialize(ViewBag.regionItems));
+    const PUE = 1.2;
+
+    // Functions
+    const usersInstance = (name, instanceList) => instanceList.find(instance => instance.name === name);
+    const usersRegion = (region, regionList) => regionList.find(reg => reg.region === region);
+    const calculateEmission = (selectedInstance, load, computingHours, selectedRegion) => {
+        let totalPowerConsumption = 0;
+        const loadInpercent = load / 100;
+        if (selectedInstance.cpus && selectedInstance.cpuTdp) {
+            totalPowerConsumption += selectedInstance.cpus * selectedInstance.cpuTdp * computingHours * loadInpercent;
+        }
+        if (selectedInstance.gpus && selectedInstance.gpuTdp) {
+            totalPowerConsumption += selectedInstance.gpus * selectedInstance.gpuTdp * computingHours * loadInpercent;
+        }
+
+        const regionEci = selectedRegion.eci * PUE;
+        const totalEmission = totalPowerConsumption * regionEci;
+        return totalEmission / 1000;
+    };
+
+
+    // Button functions
+    const calculateBtn = async () => {
+        const instanceName = document.getElementById('instance').value;
+        const regionName = document.getElementById('region').value;
+        const computingHours = parseInt(document.getElementById('computingHours').value);
+        const load = parseInt(document.getElementById('load').value);
+        const uniqueId = 'result-' + Date.now() + '-' + Math.floor(Math.random() * 1000000);
+
+
+        document.getElementById('compare-container').style.display = 'none';
+        document.getElementById('chart').style.display = 'none';
+        document.getElementById('compareBtn').style.display = 'none'
+        document.getElementById('emission').style.display = 'block';
+        document.getElementById('error').style.display = 'none';
+        document.getElementById('emission').textContent = "Calculating... Please wait.";
+
+        if (!load || !computingHours) {
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('emission').style.display = 'none';
+        }
+
+        await new Promise(x => setTimeout(x, 2000));
+        resetCharts();
+        const selectedInstance = usersInstance(instanceName, instanceList);
+        const selectedRegion = usersRegion(regionName, regionList);
+
+        if (selectedInstance && selectedRegion && computingHours > 0 && load > 0) {
+            const emission = calculateEmission(selectedInstance, load, computingHours, selectedRegion);
+            const result = emission.toFixed(3);
+            document.getElementById('emission').textContent = "Your Carbon footprint is estimated at " + result + " grams of CO2eq" + ", running " + computingHours + "hour(s) in " + selectedRegion.city;
+            const resultItem = {
+                id: uniqueId,
+                Result: result,
+                Instance: selectedInstance.name,
+                Region: selectedRegion.region,
+                ComputingHours: computingHours
+            };
+
+            console.log(resultItem)
+            await saveResultToCosmosDB(resultItem);
+            updateCharts(resultItem, 0);
+            document.getElementById('chart').style.display = 'block';
+            document.getElementById('compareBtn').style.display = 'block'
+            document.getElementById('error').style.display = 'none';
+        }
+
+    };
+
+    const showCompareBtn = () => {
+        document.getElementById('compare-container').style.display = 'block';
+        document.getElementById('compareBtn').style.display = 'none';
+    }
+
+
+    const compareGraphsBtn = () => {
+        const instanceName = document.getElementById('c-instance').value;
+        const regionName = document.getElementById('c-region').value;
+        const computingHours = parseInt(document.getElementById('c-computingHours').value);
+        const load = parseInt(document.getElementById('c-load').value);
+
+        const selectedInstance = usersInstance(instanceName, instanceList);
+        const selectedRegion = usersRegion(regionName, regionList);
+
+        if (selectedInstance && selectedRegion && computingHours > 0 && load > 0) {
+            let comparedEmission = calculateEmission(selectedInstance, load, computingHours, selectedRegion);
+            comparedResult = comparedEmission.toFixed(3);
+            document.getElementById('error2').style.display = 'none';
+            const comparedResultItem = {
+                Result: comparedResult,
+                Instance: selectedInstance.name,
+                Region: selectedRegion.region,
+                ComputingHours: computingHours
+            };
+
+            updateCharts(null, comparedResultItem);
+        }
+        else {
+            document.getElementById('error2').style.display = 'block';
+            document.getElementById('emission').style.display = 'none';
+        }
+    };
+
+
+    //Modals and generateInfo
+    let currentModalId = null;
+    const showModal = (id) => {
+        const modal = document.getElementById(id);
+        modal.classList.add('show');
+        modal.style.display = 'block';
+        document.body.classList.add('modal-open');
+        currentModalId = id;
+    };
+
+    const closeModal = () => {
+        const modal = document.getElementById(currentModalId);
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+        currentModalId = null;
+    };
+
+    const generateInfoBtn = (buttonId) => {
+        const instanceName = document.getElementById(buttonId === 'generateInfoBtn' ? 'instance' : 'c-instance').value;
+        const selectedInstance = usersInstance(instanceName, instanceList);
+        const modalContent = `
+        <p><strong>Name:</strong> ${selectedInstance.name}</p>
+        <p><strong>Processor:</strong> ${selectedInstance.prosessor}</p>
+        <p><strong>CPUs:</strong> ${selectedInstance.cpus}</p>
+        <p><strong>Cpu TDP:</strong> ${selectedInstance.cpuTdp}</p>
+        <p><strong>GPUs:</strong> ${selectedInstance.gpus}</p>
+        <p><strong>Gpu TDP:</strong> ${selectedInstance.gpuTdp}</p>
+        <p><strong>Memory GiB:</strong> ${selectedInstance.memoryGib}</p>
+        <p><strong>Temporary storage (SSD) GiB:</strong> ${selectedInstance.tempStorageGiB}</p>
+        <p><strong>Max data disks:</strong> ${selectedInstance.maxDataDisks}</p>
+    `;
+        document.getElementById('instanceInfo').innerHTML = modalContent;
+        showModal('instanceModal');
+    };
+
+
+    const generateRegionInfoBtn = (buttonId) => {
+        const regionName = document.getElementById(buttonId === 'generateRegionInfoBtn' ? 'region' : 'c-region').value
+        const selectedRegion = usersRegion(regionName, regionList);
+        const modalContent = `
+        <p><strong>PUE:</strong> ${PUE}</p>
+        <p><strong>Electricity Carbon Intensity:</strong> ${selectedRegion.eci}</p>
+    `;
+        document.getElementById('regionInfo').innerHTML = modalContent;
+        showModal('regionModal');
+    };
+
+    document.addEventListener('click', function (event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal();
+        }
+    });
+
+
+    //Db communication
+    async function saveResultToCosmosDB(resultItem) {
+        const response = await fetch('/Vm/Results', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(resultItem)
+        });
+    }
+
+
+    // Diagrams
+    const resetCharts = () => {
+        if (myBarChart) {
+            myBarChart.destroy();
+            myBarChart = null;
+        }
+    };
+
+    let myBarChart;
+    const updateCharts = (resultItem, comparedResultItem) => {
+        if (!myBarChart) {
+            updateBarChart(resultItem, comparedResultItem);
+        }
+        if (resultItem) {
+            const { Result: result, Instance: instance, Region: region, ComputingHours: computingHours } = resultItem;
+            myBarChart.data.datasets[0].label = `${instance} in ${region} running ${computingHours} hour's`;
+            myBarChart.data.datasets[0].data = [result];
+        }
+
+        if (comparedResultItem) {
+            const { Result: comparedResult, Instance: comparedInstance, Region: comparedRegion, ComputingHours: comparedComputingHours } = comparedResultItem;
+            myBarChart.data.datasets[1].label = `${comparedInstance} in ${comparedRegion} running ${comparedComputingHours} hour's`;
+            myBarChart.data.datasets[1].data = [comparedResult];
+        }
+
+        myBarChart.update();
+
+    };
+
+    const updateBarChart = (resultItem, comparedResultItem) => {
+        const { Result: result, Instance: instance, Region: region, ComputingHours: computingHours } = resultItem || {};
+        if (comparedResultItem) {
+            ({ Result: comparedResult, Instance: comparedInstance, Region: comparedRegion, ComputingHours: comparedComputingHours } = comparedResultItem);
+        }
+
+        const ctx = document.getElementById('chart').getContext('2d');
+        myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Your Carbon Footprint'],
+                datasets: [
+                    {
+                        label: `${instance} in ${region} running ${computingHours} hour's`,
+                        data: [result || ''],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'red',
+                        borderWidth: 1
+                    },
+                    {
+                        label: comparedResultItem ? `${comparedInstance} in ${comparedRegion} running ${comparedComputingHours} hour's` : 'Compare?',
+                        data: comparedResultItem ? [comparedResult] : [],
+                        backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                        borderColor: 'blue',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Toyota Avensis 100 km',
+                        data: [31],
+                        backgroundColor: 'rgba(0, 255, 0, 0.2)',
+                        borderColor: 'green',
+                        borderWidth: 1
+                    }
+
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    };
+
+</script>

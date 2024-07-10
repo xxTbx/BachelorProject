@@ -1,0 +1,35 @@
+.container {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        max-width: 800px;
+        line-height: 30px;
+    }
+
+    h1,h2{
+        margin-top: 50px;
+    }
+    .flex-ro {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 10px -15px;
+        /* Adjust spacing between columns */
+    }
+
+    li{
+        margin-bottom: 10px;
+    }
+
+    .flex-col {
+     
+        padding: 15px;
+        /* Spacing inside columns */
+        min-width: 300px;
+        /* Minimum width of each column for responsiveness */
+    }
+
+    @media(max-width:600px) {
+        .flex-ro {
+            flex-direction: column;
+        }
+    }

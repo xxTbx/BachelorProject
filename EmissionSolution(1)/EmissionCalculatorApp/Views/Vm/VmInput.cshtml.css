@@ -1,0 +1,96 @@
+/* Sentrerer skjemaelementene */
+.form-container {
+    text-align: center;
+    margin-top: 50px; /* Legg til toppmargen etter behov */
+}
+
+/* Legger til litt mellomrom mellom skjemaelementene */
+.form-group {
+    margin-bottom: 10px;
+}
+
+/* Justerer knappen */
+.form-group .btn {
+    margin-top: 10px;
+}
+
+body {
+    background-color: black;
+    background-image:none;
+}
+
+.display-5{
+    color: #65a30d;
+    font: 900 36px/130% Playfair Display, -apple-system, Roboto, Helvetica, sans-serif;
+    
+}
+
+#carbonGauge {
+    width:750px !important;
+    height: 450px !important;
+}
+
+.chart {
+    margin: 10px;
+}
+
+
+
+
+
+.vm-title p{
+    text-align: center;
+  margin-bottom: 50px;
+  font-size: 20px;
+  margin-top: 20px;
+  max-width:700px ;
+  margin-left: 25%;
+  color: black;
+}
+
+
+@media (max-width: 900px) {
+    .vm-title p{
+      
+    margin: 0;
+    padding: 2rem;
+    }
+ }
+
+
+.vm-title {
+    margin-bottom: 60px;
+    text-align: center;
+    color: #064e3b;
+    font-size: 1.25rem !important;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative; /* Legg til denne linjen */
+}
+
+.form-group label {
+    width: 200px;
+    margin-right: 10px;
+}
+
+.form-group input[type="number"],
+.form-group select {
+    flex: 1;
+    padding-right: 20px; /* Legg til litt plass for %-tegnet */
+}
+
+.form-group p {
+    position: absolute; /* Legg til denne linjen */
+    top: 50%; /* Vertikal sentrering */
+    right: 5px; /* Juster denne verdien etter behov */
+    transform: translateY(-50%); /* Vertikal sentrering */
+    margin: 0; /* Fjern standard margin for <p> */
+}
+
+#emission {
+    font-weight: bold;
+}
